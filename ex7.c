@@ -36,24 +36,17 @@ void init_TIM4(){
     TIM4_CR1 = TIM_CEN;
 }
 void handle_button() {
-    // Check if button is pressed (high) or released (low)
     if ((GPIOA_IDR & (1 << USER_BUT)) != 0) {
-        // Button is pushed
         b1_state = 1;
         last_b1 = TIM4_CNT;
     } else if (b1_state) {
-        // Button is released after being pushed
         int now = TIM4_CNT;
-            
-    // Configure TIM4 for debouncing
         if (now <= last_b1)
             now += DELAY_50MS;
             
-        // If sufficient time has passed (debouncing)
         if (now - last_b1 >= DELAY_50MS) {
             b1_state = 0;
             
-            // Toggle LED
             if ((GPIOD_ODR & (1 << GREEN_LED)) == 0)
                 GPIOD_BSRR = 1 << GREEN_LED;  // Turn on
             else
@@ -76,12 +69,12 @@ int main() {
     RCC_APB2ENR |= (1 << 14);
     
     // Configure LED
-    GPIOD_MODER = REP_BITS(GPIOD_MODER, GREEN_LED*2, 2, GPIO_MODER_OUT);  // Output
+    GPIOD_MODER = REP_BITS(GPIOD_MODER, GREEN_LED*2, 2, GPIO_MODER_OUT);  
     GPIOD_OTYPER &= ~(1 << GREEN_LED);  // Push-pull
     
     // Configure button
-    GPIOA_MODER = REP_BITS(GPIOA_MODER, USER_BUT*2, 2, GPIO_MODER_IN);  // Input
-    GPIOA_PUPDR = REP_BITS(GPIOA_PUPDR, USER_BUT*2, 2, GPIO_PUPDR_PD);  // Pull-down
+    GPIOA_MODER = REP_BITS(GPIOA_MODER, USER_BUT*2, 2, GPIO_MODER_IN);
+    GPIOA_PUPDR = REP_BITS(GPIOA_PUPDR, USER_BUT*2, 2, GPIO_PUPDR_PD);
 
 
     init_TIM4();
@@ -93,10 +86,10 @@ int main() {
     SYSCFG_EXTICR1 = REP_BITS(SYSCFG_EXTICR1, 0, 4, 0);
     
     // Configure EXTI line 0
-    EXTI_RTSR |= 1 << USER_BUT;  // Rising edge
-    EXTI_FTSR |= 1 << USER_BUT;  // Falling edge
-    EXTI_IMR |= 1 << USER_BUT;   // Enable interrupt
-    EXTI_PR |= 1 << USER_BUT;    // Clear pending
+    EXTI_RTSR |= 1 << USER_BUT;  
+    EXTI_FTSR |= 1 << USER_BUT;  
+    EXTI_IMR |= 1 << USER_BUT;   
+    EXTI_PR |= 1 << USER_BUT;    
     
     // Configure NVIC
     NVIC_ICER(EXTI0_IRQ >> 5) = 1 << (EXTI0_IRQ & 0x1F);

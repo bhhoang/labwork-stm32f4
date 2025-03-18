@@ -22,11 +22,11 @@ void handle_TIM4(){
     TIM4_SR = 0;
     TIM4_SR = 0;
     if((GPIOD_ODR & (1<<GREEN_LED))==0){
-        printf("on allume\n");
+        printf("LED ON\n");
         GPIOD_BSRR = 1 << GREEN_LED;
     }
     else{
-        printf("on éteint\n");
+        printf("LED OFF\n");
         GPIOD_BSRR = 1 << (16 + GREEN_LED);
     }
     NVIC_ICPR(TIM4_IRQ >> 5) |= 1 << (TIM4_IRQ & 0X1f);
